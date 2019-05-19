@@ -27,13 +27,70 @@ class MakeXml():
             if part.partName != None:
                 self.partName = part.partName
 
+
+    def pegaDuracao (nota):
+        retorno = 0
+        if nota.tipoNota == "3":
+            retorno = MakeXml.div / 4
+        if nota.tipoNota == "4":
+            retorno = MakeXml.div / 2
+        if nota.tipoNota == "5":
+            retorno = MakeXml.div #>>>>semínima
+        if nota.tipoNota == "6":
+            retorno = 2*MakeXml.div
+        if nota.tipoNota == "7":
+            retorno = 4*MakeXml.div
+        return retorno
+
+    def montaNotas(nota):
+        nota.duracao = MakeXml.pegaDuracao(nota)
+        texto = ''' <note>
+        <pitch>
+            <step>'''+nota.degrau+'''</step>
+            <octave>'''+nota.oitava+'''</octave>
+            </pitch>
+        <duration>'''+str(nota.duracao)+'''</duration>
+        <type>'''+nota.tipoIngles+'''</type>
+        </note>
+     '''
+        return texto
+
+    def montaAcorde(acorde):
+        cont = 1
+        val = ''''''
+        texto = ""
+        for nota in acorde.notas:
+            nota.duracao = MakeXml.pegaDuracao(nota)
+            if cont != 1 :
+                texto = texto + '''<note>
+        <chord/>
+        <pitch>
+          <step>'''+nota.degrau+'''</step>
+          <octave>'''+nota.oitava+'''</octave>
+          </pitch>
+        <duration>'''+str(nota.duracao)+'''</duration>
+        <type>'''+nota.tipoIngles+'''</type>
+        </note>
+    '''
+            else:
+                texto = texto + '''<note>
+        <pitch>
+          <step>'''+nota.degrau+'''</step>
+          <octave>'''+nota.oitava+'''</octave>
+          </pitch>
+        <duration>'''+str(nota.duracao)+'''</duration>
+        <type>'''+nota.tipoIngles+'''</type>
+        </note>
+     '''
+            cont += 1
+        return texto
+
     def montaCompasso(compasso, numCompasso, xmlFile):
         texto = '''<measure number="'''+str(numCompasso)+'''">
       '''
 
         if compasso.temAtributos == True:
             MakeXml.div = int(compasso.divisoes, 10)
-            print(MakeXml.div)
             texto = texto + '''<attributes>
         <divisions>'''+compasso.divisoes+'''</divisions>
         <key>
@@ -48,36 +105,29 @@ class MakeXml():
           <line>'''+compasso.linhaClave+'''</line>
           </clef>
         </attributes>
-     '''
+      '''
 
         for nota in compasso.notas:
-            if nota.tipoNota == "3":
-                nota.duracao = MakeXml.div / 4
-            if nota.tipoNota == "4":
-                nota.duracao = MakeXml.div / 2
-            if nota.tipoNota == "5":
-                nota.duracao = MakeXml.div #>>>>semínima
-            if nota.tipoNota == "6":
-                nota.duracao = 2*MakeXml.div
-            if nota.tipoNota == "7":
-                nota.duracao = 4*MakeXml.div
 
-            texto = texto + ''' <note>
-        <pitch>
-            <step>'''+nota.degrau+'''</step>
-            <octave>'''+nota.oitava+'''</octave>
-            </pitch>
-        <duration>'''+str(nota.duracao)+'''</duration>
-        <type>'''+nota.tipoIngles+'''</type>
-        </note>
-     '''
+            if nota.ehAcorde == True:
+                texto = texto + '''<harmony print-frame="no">
+       <root>
+         <root-step>'''+nota.name+'''</root-step>
+         </root>
+         <kind text="C">major</kind>
+    </harmony>
+    '''
+                texto = texto + MakeXml.montaAcorde(nota)
+            else:
+                texto = texto + MakeXml.montaNotas(nota)
+
         texto = texto + '''</measure>
   '''
         xmlFile.write(texto)
 
     def _montaXML(self):
 
-        xmlFile = open('/home/jose/Desktop/partituraGerada.xml', 'w')
+        xmlFile = open('/home/jose/Desktop/AutomatizaPartitura/partituraGerada.xml', 'w')
         xmlFile.write(headerXML)
         cont = 1
         for compasso in self.compassos:
@@ -90,29 +140,25 @@ class MakeXml():
 
 def main():
 
-    import nota, compasso, partitura, os
-    n1 = nota.Nota("G4", "5")
-    n2 = nota.Nota("C4", "4")
-    n3 = nota.Nota("D4", "4")
-    n4 = nota.Nota("E4", "4")
-    n5 = nota.Nota("F4", "4")
-    n6 = nota.Nota("G4", "5")
-    n7 = nota.Nota("C4", "5")
-    n8 = nota.Nota("C4", "5")
+    import nota, compasso, partitura, os, acorde
+    n1 = nota.Nota("C4", "5")
+    n2 = nota.Nota("E4", "5")
+    n3 = nota.Nota("G4", "5")
 
     #divisoes, tomCicloQuintas, batida, tipoBatida, clave
-    a = ["2", "0", "3", "4", "G"]
+    a = ["1", "0", "4", "4", "G"]
 
-    notas1 = [n1, n2, n3,n4, n5]
-    notas2 = [n6, n7, n8]
+    notas1 = [n1, n2, n3]
+    acord1 = acorde.Acorde(notas1, "C")
+    acord2 = acorde.Acorde(notas1, "D")
+    acord3 = acorde.Acorde(notas1, "E")
 
-    comp1 = compasso.Compasso(notas1, a)
-    comp2 = compasso.Compasso(notas2)
+    comp1 = compasso.Compasso([n1, n2, n3], a)
 
-    part = partitura.Partitura([comp1, comp2])
+    part = partitura.Partitura([comp1])
 
     montador = MakeXml(part)
     montador._montaXML()
-    os.system('mscore /home/jose/Desktop/partituraGerada.xml')
+    os.system('mscore /home/jose/Desktop/AutomatizaPartitura/partituraGerada.xml')
 
 main()

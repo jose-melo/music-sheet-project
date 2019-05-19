@@ -9,6 +9,7 @@ class Nota():
         self.oitava = ""
         self.nomeCompleto = ""
         self.duracao = 1
+        self.ehAcorde = False
 
         if alturaNota != None and len(alturaNota) == 3 or len(alturaNota) == 2:
 
