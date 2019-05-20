@@ -12,6 +12,7 @@ headerXML = '''<?xml version="1.0" encoding="UTF-8"?>
     </part-list>
   <part id="P1">
     '''
+import nota, compasso, partitura, os, acorde
 
 class MakeXml():
 
@@ -138,9 +139,48 @@ class MakeXml():
 </score-partwise>'''
         xmlFile.write(texto)
 
+    def constroiAcorde(acordeInserido):
+        switcher = {
+            "C": [nota.Nota("C4"), nota.Nota("E4"), nota.Nota("G4")],
+            "C#": [nota.Nota("C#4"), nota.Nota("E#4"), nota.Nota("G#4")],
+            "D": [nota.Nota("D4"), nota.Nota("F#4"), nota.Nota("A4")],
+            "Eb": [nota.Nota("Eb4"), nota.Nota("G4"), nota.Nota("Bb4")],
+            "E": [nota.Nota("E4"), nota.Nota("G#4"), nota.Nota("B4")],
+            "F": [nota.Nota("F4"), nota.Nota("A4"), nota.Nota("C4")],
+            "F#": [nota.Nota("F#4"), nota.Nota("A#4"), nota.Nota("C#4")],
+            "G": [nota.Nota("G4"), nota.Nota("B4"), nota.Nota("D4")],
+            "Ab": [nota.Nota("D"), nota.Nota("D"), nota.Nota("D")],
+            "A": [nota.Nota("D"), nota.Nota("D"), nota.Nota("D")],
+            "Bb": [nota.Nota("D"),nota.Nota("D"), nota.Nota("D")],
+            "B": [nota.Nota("D"),nota.Nota("D"), nota.Nota("D")],
+        }
+        return switcher.get(acordeInserido, [])
+
+
+    #C major – C E G
+    #C# major – C# E# G#
+    #D major – D F# A
+    #Eb major – Eb G Bb
+    ##E major – E G# B
+    #F major – F A C
+    #F# major – F# A# C#
+    #G major – G B D
+    #Ab major – Ab C Eb
+    #A major – A C# E
+    #Bb major – Bb D F
+    #B major – B D# F#*/
+
 def main():
 
-    import nota, compasso, partitura, os, acorde
+    entrada = open('/home/jose/Desktop/AutomatizaPartitura/input.txt', 'r')
+
+    acordesInseridos = entrada.readlines()
+
+    listaAcordesEntrada = []
+
+    for acordeInserido in acordesInseridos:
+        listaAcordesEntrada.append([MakeXml.constroiAcorde(acordeInserido.rstrip('\n')), acordeInserido.rstrip('\n')])
+
     n1 = nota.Nota("C4", "5")
     n2 = nota.Nota("E4", "5")
     n3 = nota.Nota("G4", "5")
@@ -148,12 +188,16 @@ def main():
     #divisoes, tomCicloQuintas, batida, tipoBatida, clave
     a = ["1", "0", "4", "4", "G"]
 
+    listaAcordes = []
+    for acord in listaAcordesEntrada:
+        listaAcordes.append(acorde.Acorde(acord[0], acord[1]))
+
     notas1 = [n1, n2, n3]
     acord1 = acorde.Acorde(notas1, "C")
     acord2 = acorde.Acorde(notas1, "D")
     acord3 = acorde.Acorde(notas1, "E")
 
-    comp1 = compasso.Compasso([n1, n2, n3], a)
+    comp1 = compasso.Compasso(listaAcordes, a)
 
     part = partitura.Partitura([comp1])
 

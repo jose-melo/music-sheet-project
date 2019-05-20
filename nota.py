@@ -16,8 +16,11 @@ class Nota():
             if alturaNota[0] >= 'A' and alturaNota[0] <= 'G':
                 self.degrau = alturaNota[0]
 
-            if alturaNota[1] == 'b' or alturaNota[1] == '#':
-                self.acidente = alturaNota[1]
+            if alturaNota[1] == 'b':
+                self.acidente = -1
+
+            if alturaNota[1] == '#':
+                self.acidente = 1
 
                 if alturaNota[2] >= '1' and alturaNota[2] <= '9':
                     self.oitava = alturaNota[2]
