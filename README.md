@@ -1,3 +1,3 @@
-# AutomatizaPartitura
-Projeto de um algoritmo para manipular arquivos musicXML e MIDI. O aplicativo utilizado para testar e comparar resultados é o Musescore (https://musescore.org/en).
-O programa foi escrito em python, visando uma abordagem orientada a objetos. Quanto ao paradigma usado na notação musical, considerei as métricas compondo cada uma das partes.
+# Music Sheet Project
+Design of an algorithm to manipulate musicXML and MIDI files. The application used to test and compare results is Musescore (https://musescore.org/en).
+The program was written in python, aiming for an object-oriented approach. As for the paradigm used for musical notation, I considered the metrics composing each of the parts.
